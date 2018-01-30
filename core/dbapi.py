@@ -30,7 +30,7 @@ class Teachers(Base):
     '''
     __tablename__ = 'teachers'
     id = Column(Integer,autoincrement=True,primary_key=True)
-    name = Column(String(32),nullable=False)
+    name = Column(String(32),nullable=False,unique=True)
 
 class Password(Base):
     '''
@@ -52,7 +52,7 @@ class Classes(Base):
     '''
     __tablename__ = 'classes'
     id = Column(Integer,autoincrement=True,primary_key=True)
-    name = Column(String(32),nullable=False)
+    name = Column(String(32),nullable=False,unique=True)
 
     teacher_id = Column(Integer, ForeignKey('teachers.id'))
     # backref
@@ -62,13 +62,7 @@ class Classes(Base):
     # backref
     course_reship = relationship("Courses", backref="course_back")
 
-    record_id = Column(Integer, ForeignKey('records.id'))
-    # backref
-    reco_reship = relationship("Records", backref="reco_back")
 
-    hmwork_id = Column(Integer, ForeignKey('hmwork.id'))
-    # backref
-    hmwork_reship = relationship("Hmwork", backref="hmwork_back")
 
 class Records(Base):
     '''
@@ -78,6 +72,9 @@ class Records(Base):
     id = Column(Integer,autoincrement=True,primary_key=True)
     date = Column(DATETIME,nullable=False)
 
+    class_id = Column(Integer, ForeignKey('classes.id'))
+    # backref
+    class_reship = relationship("Classes", backref="class_back")
 class Hmwork(Base):
     '''
     hmwork table
@@ -85,13 +82,11 @@ class Hmwork(Base):
     __tablename__ = 'hmwork'
     id = Column(Integer,autoincrement=True,primary_key=True)
     name = Column(String(64),nullable=False)
-    # stu_qq = Column(String(20),ForeignKey('students.qq'))
-    # mark = Column(Integer)
-    # submit_state = Column(String(3))
-    # #backref
-    # stu_reship = relationship("Students",backref="stu_back")
-    # def __repr__(self):
-    #     return "<detail:(%s|%s|%s|%s)>" % (self.name,self.stu_qq,self.mark,self.submit_state)
+    description = Column(String(128),nullable=False)
+
+    class_id = Column(Integer, ForeignKey('classes.id'))
+    # backref
+    class_reship = relationship("Classes", backref="hmwork_back")
 
 class Courses(Base):
     '''
@@ -99,7 +94,7 @@ class Courses(Base):
     '''
     __tablename__ = 'courses'
     id = Column(Integer,autoincrement=True,primary_key=True)
-    name = Column(String(32),nullable=False)
+    name = Column(String(32),nullable=False,unique=True)
 
 class Scores(Base):
     '''
@@ -112,22 +107,20 @@ class Scores(Base):
     stu_qq = Column(String(20),ForeignKey('students.qq'))
     hmwork_id = Column(Integer,ForeignKey('hmwork.id'))
 
-    # stu_reship = relationship("Students", backref="stu_back")
-    # hmwork_reship = relationship("Hmwork", backref="hmwork_back")
-    def __repr__(self):
-        return '%s|%s|%s|%s'%(self.mark,self.submit_state,self.stu_qq,self.hmwork_id)
+    stu_reship = relationship("Students", backref="score_back")
+    hmwork_reship = relationship("Hmwork", backref="score_back")
+    # def __repr__(self):
+    #     return '%s|%s|%s|%s'%(self.mark,self.submit_state,self.stu_qq,self.hmwork_id)
+
+class Testing(Base):
+    __tablename__ = 'test'
+    id = Column(Integer,autoincrement=True,primary_key=True)
+    name = Column(String(16))
 
 
 Base.metadata.create_all(engine)  # create table structure
 Session_class = sessionmaker(bind=engine)
 
-Session = Session_class() # new a instance
+Session = Session_class()  # new a instance
 
-# objs = Session.query(Classes).all()
-# for i in objs:
-#     score = Session.query(Scores).filter(Scores.hmwork_id==i.hmwork_reship.id).first()
-#     print(score)
-#
-# Session.commit()
-
-
+stu = Session.query(Students).all().sort()

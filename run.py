@@ -2,6 +2,7 @@ from core import dbapi
 from core.teacher import Teacher
 from core.student import Student
 
+
 session = dbapi.Session_class()
 
 def main():
@@ -21,8 +22,8 @@ def main():
                         dbapi.Password.teacher_id == teac_obj.id).first()
                     if psd == psd_obj.md5:
                         print("Login successfully")
-                        teacher = Teacher(user)
-                        teacher.info()
+                        teacher_op(user)
+                        break
                 else:
                     print("User does not exist!")
 
@@ -39,14 +40,68 @@ def main():
                         dbapi.Password.stu_qq == stu_obj.qq).first()
                     if psd == psd_obj.md5:
                         print("Login successfully")
-                        student = Student(user)
-                        student.info()
+                        student_op(user)
+                        break
                 else:
                     print("User does not exist!")
         else:
             print("Invalid!")
 
-
+def student_op(qq):
+    student = Student(qq)
+    print('''
+    1.submit my homework
+    2.show my scores
+    3.show my rank in my class
+    4.exit
+    ''')
+    while True:
+        inp = input("Input function>>:")
+        if inp == '1':
+            student.submit_homwork()
+        elif inp == '2':
+            student.show_all_scores()
+        elif inp == '3':
+            student.show_all_rank()
+        elif inp == '4':
+            break
+        else:
+            print("Valid!")
+def teacher_op(name):
+    teacher = Teacher(name)
+    print('''
+    1.create a student
+    2.create a class
+    3.create a course
+    4.create a teacher
+    5.manage students in my class
+    6.active a class
+    7.have a lesson
+    8.review homework
+    9.exit
+    ''')
+    while True:
+        inp = input("Input function>>:")
+        if inp == '1':
+            teacher.create_student()
+        elif inp == '2':
+            teacher.create_class()
+        elif inp == '3':
+            teacher.create_course()
+        elif inp == '4':
+            teacher.create_teacher()
+        elif inp == '5':
+            teacher.manage_student()
+        elif inp == '6':
+            teacher.active_class()
+        elif inp == '7':
+            teacher.having_lession()
+        elif inp == '8':
+            teacher.review_homework()
+        elif inp == '9':
+            break
+        else:
+            print("Invalid!")
 if __name__ == '__main__':
     main()
 
